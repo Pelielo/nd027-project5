@@ -4,19 +4,41 @@ from airflow.utils.decorators import apply_defaults
 
 class LoadDimensionOperator(BaseOperator):
 
-    ui_color = '#80BD9E'
+    ui_color = '#03b5fc'
+
+    insert_sql = """
+        INSERT INTO {}
+        {};
+    """
+
+    truncate_sql = """
+        TRUNCATE TABLE {};
+    """
 
     @apply_defaults
     def __init__(self,
-                 # Define your operators params (with defaults) here
-                 # Example:
-                 # conn_id = your-connection-name
+                 redshift_conn_id="",
+                 load_query="",
+                 target_table="",
+                 truncate_before_load=False,
                  *args, **kwargs):
 
         super(LoadDimensionOperator, self).__init__(*args, **kwargs)
-        # Map params here
-        # Example:
-        # self.conn_id = conn_id
+        self.redshift_conn_id = redshift_conn_id
+        self.load_query = load_query
+        self.target_table = target_table
+        self.truncate_before_load = truncate_before_load
 
     def execute(self, context):
-        self.log.info('LoadDimensionOperator not implemented yet')
+        redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
+
+        if self.truncate_before_load:
+            self.log.info(f"Truncating Redshift dimension table {self.target_table}")
+            redshift.run(LoadDimensionOperator.truncate_sql.format(self.target_table))
+
+        self.log.info(f"Inserting into Redshift dimension table {self.target_table}")
+        formatted_sql = LoadDimensionOperator.insert_sql.format(
+            self.target_table,
+            self.load_query
+        )
+        redshift.run(formatted_sql)
