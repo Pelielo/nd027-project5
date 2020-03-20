@@ -40,3 +40,30 @@ class SqlQueries:
                extract(month from start_time), extract(year from start_time), extract(dayofweek from start_time)
         FROM songplays
     """)
+
+    ## Data Validation
+
+    songplays_validation = ({
+        'query': 'select count(*) from songplays where session_id is null', 
+        'result': 0
+    })
+
+    songs_validation = ({
+        'query': 'select count(*) from songs where title is null', 
+        'result': 0
+    })
+
+    artists_validation = ({
+        'query': 'select count(*) from artists where name is null', 
+        'result': 0
+    })
+
+    users_validation = ({
+        'query': 'select count(*) from users where first_name is null', 
+        'result': 0
+    })
+
+    time_validation = ({
+        'query': 'select count(*) from time where hour is null', 
+        'result': 0
+    })

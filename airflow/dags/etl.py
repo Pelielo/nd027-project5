@@ -23,7 +23,7 @@ default_args = {
 dag = DAG('etl',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
-          schedule_interval='@once'
+          schedule_interval='0 * * * *'
         )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -96,7 +96,15 @@ load_time_dimension_table = LoadDimensionOperator(
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    queries_and_results=[
+        SqlQueries.songplays_validation, 
+        SqlQueries.songs_validation,
+        SqlQueries.artists_validation,
+        SqlQueries.users_validation,
+        SqlQueries.time_validation
+    ]
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
