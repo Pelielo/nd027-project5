@@ -51,7 +51,7 @@ ARN=
 
 * The DAG is composed of 10 tasks which are:
 
-  * `Begin_execution` - `DummyOperator`
+  * `Begin_execution` - Dummy Operator
   * `Stage_events` copies the data in the `log_data` folder of the `udacity-dend` bucket and inserts in the `stg_events` table.
   * `Stage_songs` copies the data in the `songs_data` folder of the `udacity-dend` bucket and inserts in the `stg_songs` table.
   * `Load_songplays_fact_table` uses both `stg_songs` and `stg_events` tables to insert data into the `songplays` table.
@@ -60,6 +60,7 @@ ARN=
   * `Load_user_dim_table` uses the `stg_events` table to insert data into the `users` table.
   * `Load_time_dim_table` uses the `songplays` table to insert data into the `songs` table.
   * `Run_data_quality_checks` runs several queries to check if there really are no null values in columns that should be always populated.
+  * `Stop_execution` - Dummy Operator
 
 ![ETL DAG](./airflow_dag.png)
 
